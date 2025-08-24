@@ -20,7 +20,6 @@ final class TrendingViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        // Update gradient frame when view layout changes
         if let gradientLayer = view.layer.sublayers?.first as? CAGradientLayer {
             gradientLayer.frame = view.bounds
         }
@@ -31,7 +30,6 @@ final class TrendingViewController: UIViewController {
         view.backgroundColor = .darkBlue
         view.addGradientBackground()
         
-        // Configure navigation bar
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.primaryText,
             .font: UIFont.systemFont(ofSize: 24, weight: .bold)
@@ -84,20 +82,18 @@ final class TrendingViewController: UIViewController {
     }
     
     private func createLayout() -> UICollectionViewLayout {
-        // Create a more visually appealing grid layout
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.48), // Slightly less than 0.5 for better spacing
+            widthDimension: .fractionalWidth(0.48),
             heightDimension: .fractionalHeight(1.0)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        // Better group sizing with aspect ratio for movie posters (2:3 ratio)
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
-            heightDimension: .absolute(280) // Fixed height for consistency
+            heightDimension: .absolute(280)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
-        group.interItemSpacing = .fixed(12) // More space between items
+        group.interItemSpacing = .fixed(12)
         
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = NSDirectionalEdgeInsets(
@@ -106,7 +102,7 @@ final class TrendingViewController: UIViewController {
             bottom: 16, 
             trailing: 16
         )
-        section.interGroupSpacing = 16 // More space between rows
+        section.interGroupSpacing = 16
         
         return UICollectionViewCompositionalLayout(section: section)
     }
@@ -153,7 +149,6 @@ final class TrendingViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionViewDataSource
 extension TrendingViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return vm.filteredItems.count
@@ -162,7 +157,6 @@ extension TrendingViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingCell.reuseID, for: indexPath) as! TrendingCell
         
-        // Защита от выхода за границы массива
         guard indexPath.item < vm.filteredItems.count else {
             print("⚠️ Index out of range: \(indexPath.item), array count: \(vm.filteredItems.count)")
             return cell
@@ -173,10 +167,8 @@ extension TrendingViewController: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegate
 extension TrendingViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // Защита от выхода за границы массива
         guard indexPath.item < vm.filteredItems.count else {
             print("⚠️ Index out of range in didSelectItemAt: \(indexPath.item), array count: \(vm.filteredItems.count)")
             return
@@ -196,7 +188,6 @@ extension TrendingViewController: UICollectionViewDelegate {
     }
 }
 
-// MARK: - UISearchResultsUpdating
 extension TrendingViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let query = searchController.searchBar.text ?? ""

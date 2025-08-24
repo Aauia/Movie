@@ -20,12 +20,10 @@ final class MoviesService: MoviesServiceProtocol {
     }
     
     func getTrending(page: Int) async throws -> [Movie] {
-        // Try to decode as MoviesResponse first, fallback to direct array
         do {
             let response: MoviesResponse = try await api.request(.trending(page: page))
             return response.movies
         } catch {
-            // If that fails, try to decode as direct array
             let movies: [Movie] = try await api.request(.trending(page: page))
             return movies
         }
@@ -69,7 +67,6 @@ final class MoviesService: MoviesServiceProtocol {
                 return movies
             } catch {
                 print("⚠️ Similar movies endpoint completely failed, using trending as fallback")
-                // Fallback to trending movies if similar movies endpoint fails
                 let trending: [Movie] = try await getTrending(page: page)
                 print("🔄 Using trending movies as fallback: \(trending.count) movies")
                 return trending

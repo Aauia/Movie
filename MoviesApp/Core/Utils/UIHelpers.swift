@@ -1,10 +1,8 @@
 import UIKit
 import ObjectiveC
 
-// Associated object key for retry button
 private var retryButtonKey: UInt8 = 0
 
-// MARK: - ViewState
 enum ViewState<T> {
     case idle
     case loading
@@ -13,7 +11,6 @@ enum ViewState<T> {
     case error(String)
 }
 
-// MARK: - UIView Extensions
 extension UIView {
     func addSubviews(_ views: UIView...) {
         views.forEach { addSubview($0) }
@@ -42,13 +39,11 @@ extension UIView {
     }
 }
 
-// MARK: - UIViewController Extensions
 extension UIViewController {
     func showError(_ message: String, retry: (() -> Void)? = nil) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            // Remove existing error view
             self.view.subviews.first { $0.tag == 999 }?.removeFromSuperview()
             
             let errorView = UIView()
@@ -81,7 +76,6 @@ extension UIViewController {
                 retryButton.contentEdgeInsets = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
                 retryButton.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
                 
-                // Store retry closure for later use
                 objc_setAssociatedObject(retryButton, &retryButtonKey, retry, .OBJC_ASSOCIATION_COPY_NONATOMIC)
                 
                 stackView.addArrangedSubview(retryButton)
@@ -108,7 +102,6 @@ extension UIViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            // Remove existing empty view
             self.view.subviews.first { $0.tag == 998 }?.removeFromSuperview()
             
             let emptyView = UIView()

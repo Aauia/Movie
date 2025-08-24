@@ -13,7 +13,7 @@ final class SimilarMoviesView: UIView {
     private let emptyLabel = UILabel()
     private let errorLabel = UILabel()
     private let retryButton = UIButton(type: .system)
-    private let debugLabel = UILabel() // Debug label
+    private let debugLabel = UILabel()
     
     private var movies: [Movie] = []
     var onRetry: (() -> Void)?
@@ -30,14 +30,12 @@ final class SimilarMoviesView: UIView {
     private func setupUI() {
         backgroundColor = .systemBackground
         
-        // Title
         titleLabel.text = NSLocalizedString("Похожие фильмы", comment: "")
         titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
         titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Collection view
-        collectionView.backgroundColor = .systemRed.withAlphaComponent(0.3) // Debug: make background very visible
+        collectionView.backgroundColor = .systemRed.withAlphaComponent(0.3)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(SimilarMovieCell.self, forCellWithReuseIdentifier: SimilarMovieCell.reuseID)
         print("🔧 Registered SimilarMovieCell with reuseID: \(SimilarMovieCell.reuseID)")
@@ -45,16 +43,13 @@ final class SimilarMoviesView: UIView {
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Debug: add border to see collection view bounds
         collectionView.layer.borderWidth = 3
         collectionView.layer.borderColor = UIColor.red.cgColor
         collectionView.layer.cornerRadius = 8
         
-        // Loading indicator
         loadingIndicator.hidesWhenStopped = true
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         
-        // Empty label
         emptyLabel.text = NSLocalizedString("Похожие фильмы не найдены", comment: "")
         emptyLabel.font = .systemFont(ofSize: 16)
         emptyLabel.textColor = .secondaryLabel
@@ -62,7 +57,6 @@ final class SimilarMoviesView: UIView {
         emptyLabel.isHidden = true
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Error label
         errorLabel.text = NSLocalizedString("Ошибка загрузки похожих фильмов", comment: "")
         errorLabel.font = .systemFont(ofSize: 16)
         errorLabel.textColor = .secondaryLabel
@@ -70,14 +64,12 @@ final class SimilarMoviesView: UIView {
         errorLabel.isHidden = true
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Retry button
         retryButton.setTitle(NSLocalizedString("Попробовать снова", comment: ""), for: .normal)
         retryButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         retryButton.tintColor = .systemBlue
         retryButton.addTarget(self, action: #selector(retryButtonTapped), for: .touchUpInside)
         retryButton.translatesAutoresizingMaskIntoConstraints = false
         
-        // Debug label
         debugLabel.font = .systemFont(ofSize: 12)
         debugLabel.textColor = .systemRed
         debugLabel.textAlignment = .center
@@ -95,7 +87,7 @@ final class SimilarMoviesView: UIView {
             collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12),
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: 250), // Increased height for better visibility
+            collectionView.heightAnchor.constraint(equalToConstant: 250),
             collectionView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16),
             
             loadingIndicator.centerXAnchor.constraint(equalTo: collectionView.centerXAnchor),
@@ -125,21 +117,21 @@ final class SimilarMoviesView: UIView {
     
     private func createLayout() -> UICollectionViewLayout {
         let itemSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(140), // Increased width
-            heightDimension: .absolute(200)  // Increased height
+            widthDimension: .absolute(140),
+            heightDimension: .absolute(200)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
         let groupSize = NSCollectionLayoutSize(
-            widthDimension: .absolute(140), // Increased width
-            heightDimension: .absolute(200)  // Increased height
+            widthDimension: .absolute(140),
+            heightDimension: .absolute(200)
         )
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.interGroupSpacing = 16 // Increased spacing
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20) // Increased insets
+        section.interGroupSpacing = 16
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
         
         print("🔧 Created collection view layout - Item: \(itemSize), Group: \(groupSize), Spacing: 16, Insets: 20")
         
@@ -212,7 +204,6 @@ final class SimilarMoviesView: UIView {
     }
 }
 
-// MARK: - UICollectionViewDataSource
 extension SimilarMoviesView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         print("📊 Collection view asking for number of items: \(movies.count)")
@@ -227,7 +218,6 @@ extension SimilarMoviesView: UICollectionViewDataSource {
     }
 }
 
-// MARK: - UICollectionViewDelegate
 extension SimilarMoviesView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("👆 Similar movie selected at index \(indexPath.item): \(movies[indexPath.item].title)")
@@ -240,7 +230,6 @@ extension SimilarMoviesView: UICollectionViewDelegate {
     }
 }
 
-// MARK: - SimilarMovieCell
 final class SimilarMovieCell: UICollectionViewCell {
     static let reuseID = "SimilarMovieCell"
     
@@ -267,21 +256,18 @@ final class SimilarMovieCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 8
         contentView.layer.masksToBounds = true
         
-        // Shadow
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 4
         layer.masksToBounds = false
         
-        // Poster
         posterImageView.contentMode = .scaleAspectFill
         posterImageView.clipsToBounds = true
         posterImageView.backgroundColor = .systemGray5
         posterImageView.layer.cornerRadius = 8
         posterImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Title
         titleLabel.font = .systemFont(ofSize: 12, weight: .medium)
         titleLabel.textColor = .label
         titleLabel.numberOfLines = 2
@@ -294,9 +280,9 @@ final class SimilarMovieCell: UICollectionViewCell {
             posterImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             posterImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            posterImageView.heightAnchor.constraint(equalToConstant: 160), // Increased height
+            posterImageView.heightAnchor.constraint(equalToConstant: 160),
             
-            titleLabel.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 8), // Increased spacing
+            titleLabel.topAnchor.constraint(equalTo: posterImageView.bottomAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
@@ -315,7 +301,7 @@ final class SimilarMovieCell: UICollectionViewCell {
             posterImageView.image = nil
         }
         
-        // Debug: make cell background visible
+  
         contentView.backgroundColor = .systemBlue.withAlphaComponent(0.2)
         print("✅ Cell configured for movie: \(movie.title)")
     }

@@ -16,37 +16,29 @@ enum APIEndpoint {
     var url: URL {
         var components = URLComponents(url: Self.baseURL, resolvingAgainstBaseURL: true)!
         
-        // Set the query parameters based on endpoint type
         var queryItems: [URLQueryItem] = []
         
         switch self {
         case .trending(let page):
-            // Use trending endpoint starting from page 2 (page 1 is empty)
-            // For full pagination: app page 1 = API page 2, app page 2 = API page 3, etc.
-            let actualPage = page + 1  // Skip empty page 1
+            let actualPage = page + 1
             queryItems = [
                 URLQueryItem(name: "page", value: "\(actualPage)")
             ]
             
         case .nowPlaying(let page):
-            // Use recently-added-movies endpoint with offset for different content
-            // Now Playing: Use pages 11-20 for different movies
-            let actualPage = page + 10  // Offset by 10 pages for different content
+            let actualPage = page + 10
             queryItems = [
                 URLQueryItem(name: "page", value: "\(actualPage)")
             ]
             
         case .upcoming(let page):
-            // Use recently-added-movies endpoint with larger offset for different content
-            // Upcoming: Use pages 21-30 for different movies
-            let actualPage = page + 20  // Offset by 20 pages for different content
+            let actualPage = page + 20
             queryItems = [
                 URLQueryItem(name: "page", value: "\(actualPage)")
             ]
             
         case .recentlyAdded(let page):
-            // Start from page 2 since page 1 returns empty data
-            let actualPage = page + 1  // Skip empty page 1
+            let actualPage = page + 1
             queryItems = [
                 URLQueryItem(name: "page", value: "\(actualPage)")
             ]
@@ -89,7 +81,6 @@ enum APIEndpoint {
         return "GET"
     }
     
-    // The Type header that this specific API expects
     var typeHeader: String {
         switch self {
         case .trending:

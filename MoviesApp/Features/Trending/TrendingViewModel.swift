@@ -37,7 +37,6 @@ final class TrendingViewModel {
                 items.append(contentsOf: newMovies)
                 hasMorePages = !newMovies.isEmpty
                 
-                // Apply current search filter
                 if currentSearchQuery.isEmpty {
                     filteredItems = items
                 } else {

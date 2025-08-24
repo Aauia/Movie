@@ -71,60 +71,50 @@ final class MovieDetailViewController: UIViewController {
     }
     
     private func setupContent() {
-        // Poster
         posterImageView.contentMode = .scaleAspectFill
         posterImageView.clipsToBounds = true
         posterImageView.backgroundColor = .systemGray5
         posterImageView.layer.cornerRadius = 12
         posterImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Title
         titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
         titleLabel.textColor = .label
         titleLabel.numberOfLines = 0
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Year
         yearLabel.font = .systemFont(ofSize: 16, weight: .medium)
         yearLabel.textColor = .secondaryLabel
         yearLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Rating
         ratingView.axis = .horizontal
         ratingView.spacing = 4
         ratingView.alignment = .center
         ratingView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Genres
         genresLabel.font = .systemFont(ofSize: 14, weight: .medium)
         genresLabel.textColor = .systemBlue
         genresLabel.numberOfLines = 0
         genresLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Runtime
         runtimeLabel.font = .systemFont(ofSize: 14, weight: .medium)
         runtimeLabel.textColor = .secondaryLabel
         runtimeLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Director
         directorLabel.font = .systemFont(ofSize: 14, weight: .medium)
         directorLabel.textColor = .secondaryLabel
         directorLabel.numberOfLines = 0
         directorLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Cast
         castLabel.font = .systemFont(ofSize: 14, weight: .medium)
         castLabel.textColor = .secondaryLabel
         castLabel.numberOfLines = 0
         castLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Overview
         overviewLabel.font = .systemFont(ofSize: 16)
         overviewLabel.textColor = .label
         overviewLabel.numberOfLines = 0
         overviewLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        // Similar movies
         similarMoviesView.delegate = self
         similarMoviesView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -231,31 +221,26 @@ final class MovieDetailViewController: UIViewController {
         titleLabel.text = movieDetail.title
         yearLabel.text = movieDetail.year
         
-        // Rating
         setupRating(movieDetail.rating)
         
-        // Genres
         if let genres = movieDetail.genres, !genres.isEmpty {
             genresLabel.text = genres.joined(separator: " • ")
         } else {
             genresLabel.text = ""
         }
         
-        // Runtime
         if let runtime = movieDetail.runtime {
             runtimeLabel.text = "⏱ \(runtime)"
         } else {
             runtimeLabel.text = ""
         }
         
-        // Director
         if let director = movieDetail.director {
             directorLabel.text = "Режиссёр: \(director)"
         } else {
             directorLabel.text = ""
         }
         
-        // Cast
         if let cast = movieDetail.cast, !cast.isEmpty {
             let castText = cast.prefix(3).joined(separator: ", ")
             castLabel.text = "В ролях: \(castText)"
@@ -263,10 +248,8 @@ final class MovieDetailViewController: UIViewController {
             castLabel.text = ""
         }
         
-        // Overview
         overviewLabel.text = movieDetail.overview ?? NSLocalizedString("Описание отсутствует", comment: "")
         
-        // Poster
         if let posterURL = movieDetail.poster {
             ImageLoader.shared.load(posterURL, into: posterImageView)
         }
@@ -296,7 +279,6 @@ final class MovieDetailViewController: UIViewController {
     }
 }
 
-// MARK: - SimilarMoviesViewDelegate
 extension MovieDetailViewController: SimilarMoviesViewDelegate {
     func similarMoviesView(_ view: SimilarMoviesView, didSelectMovie movie: Movie) {
         let detailVC = MovieDetailViewController(movieID: movie.id)

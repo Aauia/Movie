@@ -18,21 +18,17 @@ final class TrendingViewModelTests: XCTestCase {
             Movie(id: "3", title: "Matrix Reloaded", year: "2003")
         ]
         
-        // Simulate loaded movies
         vm.items = movies
         vm.filteredItems = movies
         
-        // Test search
         vm.search(query: "Matrix")
         XCTAssertEqual(vm.filteredItems.count, 2)
         XCTAssertTrue(vm.filteredItems.contains { $0.title == "The Matrix" })
         XCTAssertTrue(vm.filteredItems.contains { $0.title == "Matrix Reloaded" })
         
-        // Test empty search
         vm.search(query: "")
         XCTAssertEqual(vm.filteredItems.count, 3)
         
-        // Test search by year
         vm.search(query: "1999")
         XCTAssertEqual(vm.filteredItems.count, 1)
         XCTAssertEqual(vm.filteredItems.first?.title, "The Matrix")
@@ -41,20 +37,16 @@ final class TrendingViewModelTests: XCTestCase {
     func testShouldLoadMore() {
         let vm = TrendingViewModel(service: MockMoviesService())
         
-        // Simulate loaded movies
         vm.filteredItems = Array(repeating: Movie(id: "1", title: "Test"), count: 10)
         
-        // Should load more when near the end
         XCTAssertTrue(vm.shouldLoadMore(for: 5))
         XCTAssertTrue(vm.shouldLoadMore(for: 6))
         
-        // Should not load more when at the beginning
         XCTAssertFalse(vm.shouldLoadMore(for: 0))
         XCTAssertFalse(vm.shouldLoadMore(for: 1))
     }
 }
 
-// MARK: - Mock Service
 final class MockMoviesService: MoviesServiceProtocol {
     
     var shouldFail = false

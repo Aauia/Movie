@@ -13,7 +13,6 @@ struct Movie: Decodable, Hashable {
         case year
         case rating = "imdb_rating"
         case poster = "image_url"
-        // Alternative keys
         case altId = "id"
         case altRating = "rating" 
         case altPoster = "poster_path"
@@ -23,7 +22,6 @@ struct Movie: Decodable, Hashable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Try different possible keys for ID
         if let imdbId = try? container.decodeIfPresent(String.self, forKey: .id), !imdbId.isEmpty {
             id = imdbId
         } else if let altId = try? container.decodeIfPresent(String.self, forKey: .altId), !altId.isEmpty {
@@ -35,7 +33,6 @@ struct Movie: Decodable, Hashable {
         title = try container.decode(String.self, forKey: .title)
         year = try container.decodeIfPresent(String.self, forKey: .year)
         
-        // Try different rating formats
         if let ratingString = try? container.decodeIfPresent(String.self, forKey: .rating), !ratingString.isEmpty {
             rating = Double(ratingString)
         } else if let ratingDouble = try? container.decodeIfPresent(Double.self, forKey: .rating) {
@@ -48,7 +45,6 @@ struct Movie: Decodable, Hashable {
             rating = nil
         }
         
-        // Try different poster URL formats
         if let posterString = try? container.decodeIfPresent(String.self, forKey: .poster), !posterString.isEmpty {
             poster = URL(string: posterString)
         } else if let altPosterString = try? container.decodeIfPresent(String.self, forKey: .altPoster), !altPosterString.isEmpty {
@@ -60,7 +56,6 @@ struct Movie: Decodable, Hashable {
         }
     }
     
-    // For testing and preview purposes
     init(id: String, title: String, year: String? = nil, rating: Double? = nil, poster: URL? = nil) {
         self.id = id
         self.title = title
@@ -70,7 +65,6 @@ struct Movie: Decodable, Hashable {
     }
 }
 
-// MARK: - API Response Wrapper
 struct MoviesResponse: Decodable {
     let movies: [Movie]
     let totalResults: Int?
@@ -88,18 +82,15 @@ struct MoviesResponse: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Try different possible keys for the movies array
         if let movieResults = try? container.decodeIfPresent([Movie].self, forKey: .movies) {
             movies = movieResults
         } else if let results = try? container.decodeIfPresent([Movie].self, forKey: .results) {
             movies = results
         } else {
-            // If neither works, try to decode the root as an array directly
             do {
                 let singleContainer = try decoder.singleValueContainer()
                 movies = try singleContainer.decode([Movie].self)
             } catch {
-                // If all else fails, return empty array
                 movies = []
             }
         }
@@ -109,7 +100,6 @@ struct MoviesResponse: Decodable {
         page = try? container.decodeIfPresent(Int.self, forKey: .page)
     }
     
-    // For testing and empty responses
     init(movies: [Movie], totalResults: Int?, totalPages: Int?, page: Int?) {
         self.movies = movies
         self.totalResults = totalResults
@@ -118,7 +108,6 @@ struct MoviesResponse: Decodable {
     }
 }
 
-// MARK: - Movie Images Response
 struct MovieImages: Decodable {
     let images: [String]
     
@@ -140,7 +129,6 @@ struct MovieImages: Decodable {
     }
 }
 
-// MARK: - Movie Aliases Response
 struct MovieAliases: Decodable {
     let aliases: [String]
     

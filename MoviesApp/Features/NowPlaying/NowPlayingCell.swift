@@ -34,30 +34,25 @@ final class NowPlayingCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        // Modern card styling with glass-morphism effect
         contentView.backgroundColor = UIColor.cardBackground.withAlphaComponent(0.9)
         contentView.layer.cornerRadius = 20
         contentView.layer.masksToBounds = true
         
-        // Enhanced shadow for depth
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOpacity = 0.25
         layer.shadowOffset = CGSize(width: 0, height: 8)
         layer.shadowRadius = 16
         layer.masksToBounds = false
         
-        // Add subtle border
         contentView.layer.borderWidth = 1
         contentView.layer.borderColor = UIColor.cardBorder.cgColor
         
-        // Poster with better styling
         posterImageView.contentMode = .scaleAspectFill
         posterImageView.clipsToBounds = true
         posterImageView.backgroundColor = .cardBackground
         posterImageView.layer.cornerRadius = 16
         posterImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Enhanced gradient overlay for better text readability
         gradientView.translatesAutoresizingMaskIntoConstraints = false
         gradientLayer.colors = [
             UIColor.clear.cgColor,
@@ -67,7 +62,6 @@ final class NowPlayingCell: UICollectionViewCell {
         gradientLayer.locations = [0.0, 0.6, 1.0]
         gradientView.layer.addSublayer(gradientLayer)
         
-        // New badge
         newBadge.text = "NEW"
         newBadge.font = .systemFont(ofSize: 10, weight: .bold)
         newBadge.textColor = .primaryText
@@ -77,7 +71,6 @@ final class NowPlayingCell: UICollectionViewCell {
         newBadge.layer.masksToBounds = true
         newBadge.translatesAutoresizingMaskIntoConstraints = false
         
-        // Title with better typography
         titleLabel.font = .systemFont(ofSize: 17, weight: .bold)
         titleLabel.textColor = .movieTitleText
         titleLabel.numberOfLines = 2
@@ -87,7 +80,6 @@ final class NowPlayingCell: UICollectionViewCell {
         titleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
         titleLabel.layer.shadowRadius = 3
         
-        // Year with better styling
         yearLabel.font = .systemFont(ofSize: 14, weight: .medium)
         yearLabel.textColor = .movieYearText
         yearLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -96,7 +88,6 @@ final class NowPlayingCell: UICollectionViewCell {
         yearLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
         yearLabel.layer.shadowRadius = 2
         
-        // Rating
         ratingLabel.font = .systemFont(ofSize: 13, weight: .semibold)
         ratingLabel.textColor = .accentText
         ratingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -136,17 +127,14 @@ final class NowPlayingCell: UICollectionViewCell {
         titleLabel.text = movie.title
         yearLabel.text = movie.year
         
-        // Hide rating
         ratingLabel.isHidden = true
         
-        // Show NEW badge for recent movies (2023-2024)
         if let year = movie.year, let yearInt = Int(year), yearInt >= 2023 {
             newBadge.isHidden = false
         } else {
             newBadge.isHidden = true
         }
         
-        // Load movie poster with YouTube thumbnail fallback (same as TrendingCell)
         ImageLoader.shared.loadMoviePoster(for: movie, into: posterImageView)
     }
 }

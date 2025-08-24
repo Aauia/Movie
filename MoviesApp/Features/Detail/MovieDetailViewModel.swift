@@ -27,10 +27,8 @@ final class MovieDetailViewModel {
             movieDetail = detail
             onDetailStateChange?(.content(detail))
             
-            // Add a small delay to ensure detail is fully processed
-            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+            try await Task.sleep(nanoseconds: 500_000_000)
             
-            // Automatically load similar movies after detail is loaded
             await loadSimilar(id: id)
         } catch {
             onDetailStateChange?(.error(error.localizedDescription))
@@ -83,7 +81,6 @@ final class MovieDetailViewModel {
         }
     }
     
-    // Method to set similar movies for testing purposes
     func setSimilarMovies(_ movies: [Movie]) {
         similarMovies = movies
     }

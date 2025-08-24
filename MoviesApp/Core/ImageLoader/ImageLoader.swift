@@ -9,7 +9,7 @@ final class ImageLoader {
     
     private init() {
         cache.countLimit = 100
-        cache.totalCostLimit = 50 * 1024 * 1024 // 50MB
+        cache.totalCostLimit = 50 * 1024 * 1024
     }
     
     func load(_ url: URL, into imageView: UIImageView, placeholder: UIImage? = nil) {
@@ -27,7 +27,6 @@ final class ImageLoader {
 
         loadingTasks[nsurl]?.cancel()
         
-        // Create new loading task
         let task = Task { [weak self] () -> UIImage? in
             guard let self = self else { return nil }
             
@@ -82,21 +81,14 @@ final class ImageLoader {
 
         imageView.image = createPlaceholderImage(for: movie)
         
-        // Try to get YouTube thumbnail in background
         Task { @MainActor in
             if let thumbnailURL = await getYouTubeThumbnailURL(for: movie.id) {
-                // Load YouTube thumbnail
                 self.load(thumbnailURL, into: imageView, placeholder: nil)
             }
-            // If no YouTube thumbnail, the custom placeholder remains
         }
     }
     
-    /// Get YouTube thumbnail URL for a movie ID
     private func getYouTubeThumbnailURL(for movieId: String) async -> URL? {
-        // Simple implementation without external service dependency
-        // This would ideally cache results, but for now we'll make the API call
-        
         let headers = [
             "x-rapidapi-key": "ba3f178ff9mshec8ec491381d8f8p1f20f2jsn9f7815f8691f",
             "x-rapidapi-host": "movies-tv-shows-database.p.rapidapi.com",
@@ -118,7 +110,6 @@ final class ImageLoader {
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             
             if let youtubeKey = json?["youtube_trailer_key"] as? String, !youtubeKey.isEmpty {
-                // Use high quality thumbnail that works better for movie posters
                 return URL(string: "https://img.youtube.com/vi/\(youtubeKey)/hqdefault.jpg")
             }
         } catch {
@@ -138,10 +129,8 @@ final class ImageLoader {
         
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         
-        // Generate colors based on movie title if available
         let colors = generateColorsForMovie(movie)
         
-        // Create gradient background
         let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
                                 colors: [colors.0, colors.1] as CFArray,
                                 locations: [0.0, 1.0])
@@ -153,9 +142,7 @@ final class ImageLoader {
                                      options: [])
         }
         
-        // Add movie icon in center instead of text (text will be shown in labels)
         if movie != nil {
-            // Add a subtle film icon in the center
             let iconSize: CGFloat = 60
             let iconRect = CGRect(
                 x: (size.width - iconSize) / 2,
@@ -164,11 +151,9 @@ final class ImageLoader {
                 height: iconSize
             )
             
-            // Draw simple play icon
             context.setFillColor(UIColor.white.withAlphaComponent(0.6).cgColor)
             let path = UIBezierPath()
             
-            // Triangle (play button)
             let triangleSize: CGFloat = 24
             let centerX = iconRect.midX
             let centerY = iconRect.midY
@@ -182,24 +167,18 @@ final class ImageLoader {
             context.fillPath()
         }
         
-        // Add subtle film strip decoration along the edges
         context.setFillColor(UIColor.white.withAlphaComponent(0.08).cgColor)
         let stripWidth: CGFloat = 6
         let holeSize: CGFloat = 4
         let holeSpacing: CGFloat = size.height / 10
         
-        // Left strip
         context.fill(CGRect(x: 0, y: 0, width: stripWidth, height: size.height))
-        // Right strip  
         context.fill(CGRect(x: size.width - stripWidth, y: 0, width: stripWidth, height: size.height))
         
-        // Add holes in the strips
         context.setFillColor(UIColor.black.withAlphaComponent(0.3).cgColor)
         for i in 0..<10 {
             let y = CGFloat(i) * holeSpacing + holeSpacing/2 - holeSize/2
-            // Left holes
             context.fill(CGRect(x: (stripWidth - holeSize)/2, y: y, width: holeSize, height: holeSize))
-            // Right holes
             context.fill(CGRect(x: size.width - stripWidth + (stripWidth - holeSize)/2, y: y, width: holeSize, height: holeSize))
         }
         
@@ -208,11 +187,9 @@ final class ImageLoader {
     
     private func generateColorsForMovie(_ movie: Movie?) -> (CGColor, CGColor) {
         guard let movie = movie else {
-            // Default colors if no movie info
             return (UIColor.cardBackground.cgColor, UIColor.primaryPurple.withAlphaComponent(0.7).cgColor)
         }
         
-        // Generate consistent colors based on movie title hash
         let hash = movie.title.hashValue
         let hue1 = CGFloat(abs(hash) % 360) / 360.0
         let hue2 = CGFloat(abs(hash.multipliedReportingOverflow(by: 2).partialValue) % 360) / 360.0
@@ -223,41 +200,33 @@ final class ImageLoader {
         return (color1.cgColor, color2.cgColor)
     }
     
-    /// Process image to better fit movie poster format
     private func processImageForMoviePoster(_ originalImage: UIImage, isYouTubeThumbnail: Bool) -> UIImage {
-        let targetSize = CGSize(width: 300, height: 450) // 2:3 aspect ratio for movie posters
+        let targetSize = CGSize(width: 300, height: 450)
         
         if isYouTubeThumbnail {
-            // YouTube thumbnails are 16:9, we need to crop them to 2:3
             return cropYouTubeThumbnailToPosterFormat(originalImage, targetSize: targetSize)
         } else {
-            // For other images, just resize while maintaining aspect ratio
             return resizeImage(originalImage, targetSize: targetSize)
         }
     }
     
-    /// Crop YouTube thumbnail (16:9) to movie poster format (2:3)
     private func cropYouTubeThumbnailToPosterFormat(_ image: UIImage, targetSize: CGSize) -> UIImage {
         let originalSize = image.size
         let originalAspectRatio = originalSize.width / originalSize.height
         let targetAspectRatio = targetSize.width / targetSize.height
         
-        // Calculate crop dimensions
         var cropRect: CGRect
         
         if originalAspectRatio > targetAspectRatio {
-            // Original is wider, crop from sides
             let newWidth = originalSize.height * targetAspectRatio
             let xOffset = (originalSize.width - newWidth) / 2
             cropRect = CGRect(x: xOffset, y: 0, width: newWidth, height: originalSize.height)
         } else {
-            // Original is taller, crop from top/bottom
             let newHeight = originalSize.width / targetAspectRatio
             let yOffset = (originalSize.height - newHeight) / 2
             cropRect = CGRect(x: 0, y: yOffset, width: originalSize.width, height: newHeight)
         }
         
-        // Perform the crop
         guard let cgImage = image.cgImage?.cropping(to: cropRect) else {
             return resizeImage(image, targetSize: targetSize)
         }
@@ -266,7 +235,6 @@ final class ImageLoader {
         return resizeImage(croppedImage, targetSize: targetSize)
     }
     
-    /// Resize image to target size while maintaining quality
     private func resizeImage(_ image: UIImage, targetSize: CGSize) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: targetSize)
         return renderer.image { _ in

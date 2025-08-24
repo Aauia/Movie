@@ -9,13 +9,11 @@ final class ModernMovieDetailViewController: UIViewController {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    // Hero section
     private let heroContainerView = UIView()
     private let backgroundImageView = UIImageView()
     private let gradientView = UIView()
     private let gradientLayer = CAGradientLayer()
     
-    // Content section
     private let posterImageView = UIImageView()
     private let rightSideContainerView = UIView()
     private let titleLabel = UILabel()
@@ -26,18 +24,15 @@ final class ModernMovieDetailViewController: UIViewController {
     private let runtimeLabel = UILabel()
     private let directorLabel = UILabel()
     
-    // Action buttons
     private let actionsStackView = UIStackView()
     private let playTrailerButton = UIButton(type: .system)
     private let watchlistButton = UIButton(type: .system)
     
-    // Description section
     private let overviewTitleLabel = UILabel()
     private let overviewLabel = UILabel()
     private let castTitleLabel = UILabel()
     private let castLabel = UILabel()
     
-    // Similar movies
     private let similarMoviesView = SimilarMoviesView()
     
     private let loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -107,17 +102,14 @@ final class ModernMovieDetailViewController: UIViewController {
     }
     
     private func setupHeroSection() {
-        // Hero container
         heroContainerView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(heroContainerView)
         
-        // Background image for movie backdrop
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = true
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         heroContainerView.addSubview(backgroundImageView)
         
-        // Gradient overlay
         gradientView.translatesAutoresizingMaskIntoConstraints = false
         gradientLayer.colors = [
             UIColor.clear.cgColor,
@@ -147,7 +139,6 @@ final class ModernMovieDetailViewController: UIViewController {
     }
     
     private func setupContent() {
-    // Title
     titleLabel.font = .systemFont(ofSize: 32, weight: .bold)
     titleLabel.textColor = .white
     titleLabel.numberOfLines = 0
@@ -157,24 +148,20 @@ final class ModernMovieDetailViewController: UIViewController {
     titleLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
     titleLabel.layer.shadowRadius = 4
     
-    // Year
     yearLabel.font = .systemFont(ofSize: 18, weight: .medium)
     yearLabel.textColor = UIColor.white.withAlphaComponent(0.9)
     yearLabel.translatesAutoresizingMaskIntoConstraints = false
     
-    // Rating
     ratingView.axis = .horizontal
     ratingView.spacing = 8
     ratingView.alignment = .center
     ratingView.translatesAutoresizingMaskIntoConstraints = false
     
-    // Genres
     genresStackView.axis = .horizontal
     genresStackView.spacing = 8
     genresStackView.alignment = .center
     genresStackView.translatesAutoresizingMaskIntoConstraints = false
     
-    // Meta info
     metaInfoStackView.axis = .vertical
     metaInfoStackView.spacing = 8
     metaInfoStackView.alignment = .leading
@@ -185,7 +172,6 @@ final class ModernMovieDetailViewController: UIViewController {
     directorLabel.textColor = .secondaryText
     directorLabel.numberOfLines = 0
     
-    // Overview
     overviewTitleLabel.text = "Описание"
     overviewTitleLabel.font = .systemFont(ofSize: 20, weight: .bold)
     overviewTitleLabel.textColor = .primaryText
@@ -267,13 +253,11 @@ final class ModernMovieDetailViewController: UIViewController {
 
     
     private func setupActionButtons() {
-        // Actions stack
         actionsStackView.axis = .horizontal
         actionsStackView.spacing = 16
         actionsStackView.distribution = .fillEqually
         actionsStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        // Play trailer button
         playTrailerButton.setTitle("▶ Смотреть трейлер", for: .normal)
         playTrailerButton.setTitleColor(.white, for: .normal)
         playTrailerButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
@@ -317,7 +301,6 @@ final class ModernMovieDetailViewController: UIViewController {
             return
         }
         
-        // Open YouTube trailer in system browser
         if UIApplication.shared.canOpenURL(youtubeURL) {
             UIApplication.shared.open(youtubeURL, options: [:], completionHandler: nil)
         } else {
@@ -350,7 +333,6 @@ final class ModernMovieDetailViewController: UIViewController {
                     self.configure(with: detail)
                 case .empty:
                     self.loadingIndicator.stopAnimating()
-                    // Handle empty state
                 case .error(let message):
                     self.loadingIndicator.stopAnimating()
                     self.showError(message)
@@ -386,7 +368,6 @@ final class ModernMovieDetailViewController: UIViewController {
             directorLabel.text = "🎬 Режиссёр: \(director)"
         }
         
-        // ✅ Show full cast
         if let cast = detail.cast, !cast.isEmpty {
             castLabel.text = cast.joined(separator: ", ")
         } else {
@@ -397,7 +378,6 @@ final class ModernMovieDetailViewController: UIViewController {
         setupRating(detail.rating)
         setupGenres(detail.genres)
         
-        // ✅ Background only (poster removed)
         if let thumbnailURL = detail.youtubeThumbnailURL {
             ImageLoader.shared.load(thumbnailURL, into: backgroundImageView)
         }
@@ -411,40 +391,33 @@ final class ModernMovieDetailViewController: UIViewController {
 
     
     private func loadImages(for detail: MovieDetail) {
-        // Use YouTube thumbnail for background
         if let thumbnailURL = detail.youtubeThumbnailURL {
             ImageLoader.shared.load(thumbnailURL, into: backgroundImageView)
         }
         
-        // Use poster for poster view with fallback to YouTube
         if let posterURL = detail.poster {
             ImageLoader.shared.load(posterURL, into: posterImageView)
         } else if let thumbnailURL = detail.youtubeThumbnailHQURL {
             ImageLoader.shared.load(thumbnailURL, into: posterImageView)
         } else {
-            // Create movie placeholder
             posterImageView.image = ImageLoader.shared.createPlaceholderImage(for: nil)
         }
     }
     
     private func setupRating(_ rating: Double?) {
-        // Clear existing views
         ratingView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         guard let rating = rating else { return }
         
-        // Star icon
         let starLabel = UILabel()
         starLabel.text = "⭐"
         starLabel.font = .systemFont(ofSize: 20)
         
-        // Rating text
         let ratingLabel = UILabel()
         ratingLabel.text = String(format: "%.1f", rating)
         ratingLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         ratingLabel.textColor = .accentText
         
-        // Add some spacing between star and rating
         let spacingView = UIView()
         spacingView.widthAnchor.constraint(equalToConstant: 8).isActive = true
         
@@ -454,7 +427,6 @@ final class ModernMovieDetailViewController: UIViewController {
     }
     
     private func setupGenres(_ genres: [String]?) {
-        // Clear existing views
         genresStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         guard let genres = genres, !genres.isEmpty else { return }
@@ -469,7 +441,6 @@ final class ModernMovieDetailViewController: UIViewController {
             genreLabel.layer.masksToBounds = true
             genreLabel.textAlignment = .center
             
-            // Add padding
             genreLabel.translatesAutoresizingMaskIntoConstraints = false
             genresStackView.addArrangedSubview(genreLabel)
             
@@ -479,7 +450,6 @@ final class ModernMovieDetailViewController: UIViewController {
             ])
         }
         
-        // Add some bottom spacing to the genres stack
         let bottomSpacing = UIView()
         bottomSpacing.heightAnchor.constraint(equalToConstant: 8).isActive = true
         genresStackView.addArrangedSubview(bottomSpacing)
@@ -492,7 +462,6 @@ final class ModernMovieDetailViewController: UIViewController {
     }
 }
 
-// MARK: - SimilarMoviesViewDelegate
 extension ModernMovieDetailViewController: SimilarMoviesViewDelegate {
     func similarMoviesView(_ view: SimilarMoviesView, didSelectMovie movie: Movie) {
         let detailVC = ModernMovieDetailViewController(movieID: movie.id)
